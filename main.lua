@@ -1,6 +1,6 @@
 debugX = true
 
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/Jayem122004/Cerberushub/main/main.lua'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Cerberus Hub", -- Title of the Interface
@@ -43,7 +43,7 @@ local Section = Tab:CreateSection("Section Example")
 local Button = Tab:CreateButton({
    Name = "Button Example",
    Callback = function()
-      -- The function that takes place when the button is pressed
+   -- The function that takes place when the button is pressed
    end,
 })
 
