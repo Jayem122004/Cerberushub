@@ -858,11 +858,10 @@ do
 
 	Rayfield.Main.Shadow.Image.Image = customAssets[tostring(5587865193)]
 	Rayfield.Main.Topbar.Hide.Image = customAssets[tostring(10137832201)]
-	Rayfield.Main.Topbar.ChangeSize.Image = customAssets[tostring(10137941941)]
+	Rayfield.Main.Topbar.ChangeSize.Image = customAssets[tostring(11036884234)]
 	Rayfield.Main.Topbar.Settings.Image = customAssets[tostring(80503127983237)]
 	Rayfield.Main.Topbar.Icon.Image = customAssets[tostring(78137979054938)]
 	Rayfield.Main.Topbar.Search.Image = customAssets["IconMagnifyingGlass2"]
-	Rayfield.Main.Topbar.LocalWindowsToggle.Image = customAssets[tostring(11036884234)]
 	Rayfield.Main.Topbar.Search.ImageRectOffset = Vector2.new(0, 0)
 	Rayfield.Main.Topbar.Search.ImageRectSize = Vector2.new(0, 0)
 	Rayfield.Main.Elements.Template.Toggle.Switch.Shadow.Image = customAssets[tostring(3602733521)]
@@ -943,7 +942,6 @@ local function ChangeTheme(Theme)
 
 	Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
 	Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-	Rayfield.Main.Topbar.LocalWindowsToggle.ImageColor3 = SelectedTheme.TextColor
 	Rayfield.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
 	if Topbar:FindFirstChild('Settings') then
 		Rayfield.Main.Topbar.Settings.ImageColor3 = SelectedTheme.TextColor
@@ -3584,9 +3582,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 	end
 	Topbar.ChangeSize.ImageTransparency = 1
 	Topbar.Hide.ImageTransparency = 1
-	if Topbar:FindFirstChild('LocalWindowsToggle') then
-		Topbar.LocalWindowsToggle.ImageTransparency = 1
-	end
 
 
 	task.wait(0.5)
@@ -3606,10 +3601,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 	TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
 	task.wait(0.05)
 	TweenService:Create(Topbar.Hide, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
-	if Topbar:FindFirstChild('LocalWindowsToggle') then
-		task.wait(0.05)
-		TweenService:Create(Topbar.LocalWindowsToggle, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
-	end
 	task.wait(0.3)
 
 	if dragBar then
@@ -3787,18 +3778,16 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 	setVisibility(Hidden, not useMobileSizing)
 end)
 
-if Topbar:FindFirstChild('LocalWindowsToggle') then
-	Topbar.LocalWindowsToggle.MouseButton1Click:Connect(function()
-		if Debounce then return end
-		if LocalWindowsHidden then
-			LocalWindowsHidden = false
-			ShowLocalWindows()
-		else
-			LocalWindowsHidden = true
-			HideLocalWindows()
-		end
-	end)
-end
+Topbar.ChangeSize.MouseButton1Click:Connect(function()
+	if Debounce then return end
+	if LocalWindowsHidden then
+		LocalWindowsHidden = false
+		ShowLocalWindows()
+	else
+		LocalWindowsHidden = true
+		HideLocalWindows()
+	end
+end)
 
 hideHotkeyConnection = UserInputService.InputBegan:Connect(function(input, processed)
 	if (input.KeyCode == Enum.KeyCode[getSetting("General", "rayfieldOpen")]) and not processed then
