@@ -862,6 +862,7 @@ do
 	Rayfield.Main.Topbar.Settings.Image = customAssets[tostring(80503127983237)]
 	Rayfield.Main.Topbar.Icon.Image = customAssets[tostring(78137979054938)]
 	Rayfield.Main.Topbar.Search.Image = customAssets["IconMagnifyingGlass2"]
+	Rayfield.Main.Topbar.LocalWindowsToggle.Image = customAssets[tostring(11036884234)]
 	Rayfield.Main.Topbar.Search.ImageRectOffset = Vector2.new(0, 0)
 	Rayfield.Main.Topbar.Search.ImageRectSize = Vector2.new(0, 0)
 	Rayfield.Main.Elements.Template.Toggle.Switch.Shadow.Image = customAssets[tostring(3602733521)]
@@ -919,8 +920,8 @@ local Icons = useStudio and require(script.Parent.icons) or loadWithTimeout('htt
 
 local CFileName = nil
 local CEnabled = false
-local Minimised = false
 local Hidden = false
+local LocalWindowsHidden = false
 local Debounce = false
 local searchOpen = false
 local Notifications = Rayfield.Notifications
@@ -942,6 +943,7 @@ local function ChangeTheme(Theme)
 
 	Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
 	Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+	Rayfield.Main.Topbar.LocalWindowsToggle.ImageColor3 = SelectedTheme.TextColor
 	Rayfield.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
 	if Topbar:FindFirstChild('Settings') then
 		Rayfield.Main.Topbar.Settings.ImageColor3 = SelectedTheme.TextColor
@@ -1363,7 +1365,7 @@ local function closeSearch()
 	Main.Search.Input.Interactable = false
 end
 
--- Sets element visibility across all tab pages (used by Hide, Unhide, Maximise, Minimise)
+-- Sets element visibility across all tab pages (used by Hide, Unhide)
 local function setElementsVisible(show)
 	for _, tab in ipairs(Elements:GetChildren()) do
 		if tab.Name ~= "Template" and tab.ClassName == "ScrollingFrame" and tab.Name ~= "Placeholder" then
@@ -1394,7 +1396,7 @@ local function setElementsVisible(show)
 	end
 end
 
--- Sets tab button visibility (used by Hide, Unhide, Maximise, Minimise)
+-- Sets tab button visibility (used by Hide, Unhide)
 local function setTabButtonsVisible(show)
 	for _, tabbtn in ipairs(TabList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
@@ -1476,31 +1478,6 @@ local function Hide(notify: boolean?)
 	Debounce = false
 end
 
-local function Maximise()
-	Debounce = true
-	Topbar.ChangeSize.Image = customAssets[tostring(10137941941)]
-
-	TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
-	TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {ImageTransparency = 0.6}):Play()
-	TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0}):Play()
-	TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0}):Play()
-	TweenService:Create(dragBarCosmetic, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0.7}):Play()
-	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = useMobileSizing and UDim2.new(0, 500, 0, 275) or UDim2.new(0, 500, 0, 475)}):Play()
-	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 500, 0, 45)}):Play()
-	TabList.Visible = true
-	task.wait(0.2)
-
-	Elements.Visible = true
-
-	setElementsVisible(true)
-
-	task.wait(0.1)
-
-	setTabButtonsVisible(true)
-
-	task.wait(0.5)
-	Debounce = false
-end
 
 
 local function Unhide()
@@ -1526,10 +1503,6 @@ local function Unhide()
 		end)
 	end
 
-	if Minimised then
-		task.spawn(Maximise)
-	end
-
 	dragBar.Position = useMobileSizing and UDim2.new(0.5, 0, 0.5, dragOffsetMobile) or UDim2.new(0.5, 0, 0.5, dragOffset)
 
 	dragInteract.Visible = true
@@ -1552,38 +1525,44 @@ local function Unhide()
 	TweenService:Create(dragBarCosmetic, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0.5}):Play()
 
 	task.wait(0.5)
-	Minimised = false
 	Debounce = false
 end
 
-local function Minimise()
+local function ShowLocalWindows()
 	Debounce = true
-	Topbar.ChangeSize.Image = customAssets[tostring(11036884234)]
+	TabList.Visible = true
+	task.wait(0.2)
+	Elements.Visible = true
+	setElementsVisible(true)
+	task.wait(0.1)
+	setTabButtonsVisible(true)
+	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = useMobileSizing and UDim2.new(0, 500, 0, 275) or UDim2.new(0, 500, 0, 475)}):Play()
+	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 500, 0, 45)}):Play()
+	TweenService:Create(dragBarCosmetic, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0.5}):Play()
+	task.wait(0.5)
+	LocalWindowsHidden = false
+	Debounce = false
+end
 
-	Topbar.UIStroke.Color = SelectedTheme.ElementStroke
-
+local function HideLocalWindows()
+	Debounce = true
 	task.spawn(closeSearch)
-
 	setTabButtonsVisible(false)
-
 	setElementsVisible(false)
-
 	TweenService:Create(dragBarCosmetic, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-	TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Transparency = 0}):Play()
 	TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {ImageTransparency = 1}):Play()
 	TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {BackgroundTransparency = 1}):Play()
 	TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {BackgroundTransparency = 1}):Play()
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 495, 0, 45)}):Play()
 	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 495, 0, 45)}):Play()
-
 	task.wait(0.3)
-
 	Elements.Visible = false
 	TabList.Visible = false
-
 	task.wait(0.2)
+	LocalWindowsHidden = true
 	Debounce = false
 end
+
 
 local function saveSettings() -- Save settings to config file
 	local encoded
@@ -2147,7 +2126,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 
 		TabButton.Interact.MouseButton1Click:Connect(function()
-			if Minimised then return end
 			TweenService:Create(TabButton, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0}):Play()
 			TweenService:Create(TabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
 			TweenService:Create(TabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
@@ -3606,6 +3584,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 	end
 	Topbar.ChangeSize.ImageTransparency = 1
 	Topbar.Hide.ImageTransparency = 1
+	if Topbar:FindFirstChild('LocalWindowsToggle') then
+		Topbar.LocalWindowsToggle.ImageTransparency = 1
+	end
 
 
 	task.wait(0.5)
@@ -3625,6 +3606,10 @@ function RayfieldLibrary:CreateWindow(Settings)
 	TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
 	task.wait(0.05)
 	TweenService:Create(Topbar.Hide, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
+	if Topbar:FindFirstChild('LocalWindowsToggle') then
+		task.wait(0.05)
+		TweenService:Create(Topbar.LocalWindowsToggle, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
+	end
 	task.wait(0.3)
 
 	if dragBar then
@@ -3721,16 +3706,6 @@ function RayfieldLibrary:Destroy()
 	Rayfield:Destroy()
 end
 
-Topbar.ChangeSize.MouseButton1Click:Connect(function()
-	if Debounce then return end
-	if Minimised then
-		Minimised = false
-		Maximise()
-	else
-		Minimised = true
-		Minimise()
-	end
-end)
 
 Main.Search.Input:GetPropertyChangedSignal('Text'):Connect(function()
 	if #Main.Search.Input.Text > 0 then
@@ -3811,6 +3786,19 @@ end
 Topbar.Hide.MouseButton1Click:Connect(function()
 	setVisibility(Hidden, not useMobileSizing)
 end)
+
+if Topbar:FindFirstChild('LocalWindowsToggle') then
+	Topbar.LocalWindowsToggle.MouseButton1Click:Connect(function()
+		if Debounce then return end
+		if LocalWindowsHidden then
+			LocalWindowsHidden = false
+			ShowLocalWindows()
+		else
+			LocalWindowsHidden = true
+			HideLocalWindows()
+		end
+	end)
+end
 
 hideHotkeyConnection = UserInputService.InputBegan:Connect(function(input, processed)
 	if (input.KeyCode == Enum.KeyCode[getSetting("General", "rayfieldOpen")]) and not processed then
