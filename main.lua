@@ -5,9 +5,9 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Cerberus Hub", -- Title of the Interface
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Cerberus Hub is loading", -- First thing users see, use if you need to do some long loading processes and want to inform the user about it
-   LoadingSubtitle = "Unknown Developer", -- Second thing users see, also good for long loading processes
-   Theme = "Amethyst", -- Cooler palette for Cerberus Hub
+   LoadingTitle = "Rayfield Interface Suite",
+   LoadingSubtitle = "by Sirius",
+   Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
@@ -44,17 +44,6 @@ local Button = Tab:CreateButton({
    Name = "Button Example",
    Callback = function()
    -- The function that takes place when the button is pressed
-   end,
-})
-
-local WindowToggle = Tab:CreateButton({
-   Name = "Toggle Rayfield Window",
-   Callback = function()
-      if Rayfield:IsVisible() then
-         Rayfield:SetVisibility(false)
-      else
-         Rayfield:SetVisibility(true)
-      end
    end,
 })
 
