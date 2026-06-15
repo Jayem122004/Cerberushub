@@ -44,7 +44,7 @@ local Icons = nil
 local function loadIcons()
     if Icons then return Icons end
     local success, result = pcall(function()
-        return loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua'))()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/Jayem122004/Cerberushub/main/main.lua"))()
     end)
     if success then
         Icons = result
