@@ -1,6 +1,6 @@
 debugX = true
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/Jayem122004/Cerberushub/main/main.lua'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Cerberus Hub", -- Title of the Interface
@@ -43,7 +43,18 @@ local Section = Tab:CreateSection("Section Example")
 local Button = Tab:CreateButton({
    Name = "Button Example",
    Callback = function()
-   -- The function that takes place when the button is pressed
+      -- The function that takes place when the button is pressed
+   end,
+})
+
+local WindowToggle = Tab:CreateButton({
+   Name = "Toggle Rayfield Window",
+   Callback = function()
+      if Rayfield:IsVisible() then
+         Rayfield:SetVisibility(false)
+      else
+         Rayfield:SetVisibility(true)
+      end
    end,
 })
 
