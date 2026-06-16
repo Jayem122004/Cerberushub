@@ -2,6 +2,80 @@ debugX = true
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- Create Custom Toggle Button UI (Outside Window)
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Screen Gui for Toggle Button
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "CerberusToggleGui"
+ToggleGui.ResetOnSpawn = false
+ToggleGui.Parent = PlayerGui
+
+-- Create Toggle Button Box
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 150, 0, 60)
+ToggleButton.Position = UDim2.new(0, 20, 0, 20)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70) -- Amethyst theme color
+ToggleButton.TextColor3 = Color3.fromRGB(200, 150, 255)
+ToggleButton.TextSize = 14
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Text = "📦 CERBERUS\nHUB"
+ToggleButton.BorderSizePixel = 2
+ToggleButton.BorderColor3 = Color3.fromRGB(150, 100, 200)
+ToggleButton.Parent = ToggleGui
+
+-- Add Corner Radius
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = ToggleButton
+
+-- Make Button Draggable
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+ToggleButton.InputBegan:Connect(function(input, gameProcessed)
+   if input.UserInputType == Enum.UserInputType.MouseButton1 then
+      dragging = true
+      dragStart = input.Position
+      startPos = ToggleButton.Position
+   end
+end)
+
+ToggleButton.InputEnded:Connect(function(input, gameProcessed)
+   if input.UserInputType == Enum.UserInputType.MouseButton1 then
+      dragging = false
+   end
+end)
+
+UserInputService.InputChanged:Connect(function(input, gameProcessed)
+   if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+      local delta = input.Position - dragStart
+      ToggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+   end
+end)
+
+-- Toggle Window Function
+local windowVisible = true
+ToggleButton.MouseButton1Click:Connect(function()
+   windowVisible = not windowVisible
+   Window.UI.Main.Visible = windowVisible
+   
+   -- Change button color on toggle
+   if windowVisible then
+      ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
+      ToggleButton.Text = "📦 CERBERUS\nHUB"
+   else
+      ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
+      ToggleButton.Text = "📦 SHOW\nHUB"
+   end
+end)
+
 local Window = Rayfield:CreateWindow({
    Name = "Cerberus Hub", -- Title of the Interface
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
