@@ -36,6 +36,22 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+-- Remove the X close button from the window
+if Window.UI.Main and Window.UI.Main:FindFirstChild("CloseButton") then
+   Window.UI.Main:FindFirstChild("CloseButton"):Destroy()
+elseif Window.UI.Main and Window.UI.Main:FindFirstChild("Close") then
+   Window.UI.Main:FindFirstChild("Close"):Destroy()
+end
+
+-- Try to find and disable any close button in the header
+if Window.UI.Main then
+   for _, child in ipairs(Window.UI.Main:GetChildren()) do
+      if child.Name:lower():find("close") or child.Name:lower():find("exit") then
+         child:Destroy()
+      end
+   end
+end
+
 -- Create Custom Toggle Button UI (Outside Window) - AFTER Window is created
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -55,9 +71,9 @@ ToggleButton.Size = UDim2.new(0, 70, 0, 70)
 ToggleButton.Position = UDim2.new(0, 20, 0, 20)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
 ToggleButton.TextColor3 = Color3.fromRGB(200, 150, 255)
-ToggleButton.TextSize = 28
+ToggleButton.TextSize = 14
 ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "📦"
+ToggleButton.Text = "📦\nShow"
 ToggleButton.BorderSizePixel = 2
 ToggleButton.BorderColor3 = Color3.fromRGB(150, 100, 200)
 ToggleButton.Parent = ToggleGui
@@ -112,10 +128,10 @@ ToggleButton.MouseButton1Click:Connect(function()
       -- Change button appearance on toggle
       if windowVisible then
          ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
-         ToggleButton.Text = "📦"
+         ToggleButton.Text = "📦\nShow"
       else
-         ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
-         ToggleButton.Text = "✓"
+         ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+         ToggleButton.Text = "📦\nHide"
       end
    end
 end)
