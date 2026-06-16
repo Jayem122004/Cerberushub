@@ -62,20 +62,22 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ToggleGui = Instance.new("ScreenGui")
 ToggleGui.Name = "CerberusToggleGui"
 ToggleGui.ResetOnSpawn = false
+ToggleGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ToggleGui.Parent = PlayerGui
 
 -- Create Circular Toggle Button
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "CircleToggleButton"
-ToggleButton.Size = UDim2.new(0, 70, 0, 70)
+ToggleButton.Size = UDim2.new(0, 80, 0, 80)
 ToggleButton.Position = UDim2.new(0, 20, 0, 20)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
 ToggleButton.TextColor3 = Color3.fromRGB(200, 150, 255)
-ToggleButton.TextSize = 14
+ToggleButton.TextSize = 12
 ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "📦\nShow"
+ToggleButton.Text = "CERBERUS\n📦\nTOGGLE"
 ToggleButton.BorderSizePixel = 2
 ToggleButton.BorderColor3 = Color3.fromRGB(150, 100, 200)
+ToggleButton.ZIndex = 100
 ToggleButton.Parent = ToggleGui
 
 -- Add Circle Shape
@@ -120,18 +122,26 @@ ToggleButton.MouseButton1Click:Connect(function()
    if not isDragging then
       windowVisible = not windowVisible
       
-      -- Access the main UI element to toggle visibility
-      if Window and Window.UI and Window.UI.Main then
-         Window.UI.Main.Visible = windowVisible
+      -- Hide/Show the entire window and all its elements
+      if Window and Window.UI then
+         -- Toggle all UI elements
+         for _, element in ipairs(Window.UI:GetChildren()) do
+            element.Visible = windowVisible
+         end
+         
+         -- Also toggle the main window itself
+         if Window.UI.Main then
+            Window.UI.Main.Visible = windowVisible
+         end
       end
       
       -- Change button appearance on toggle
       if windowVisible then
          ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
-         ToggleButton.Text = "📦\nShow"
+         ToggleButton.Text = "CERBERUS\n📦\nOPEN"
       else
          ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
-         ToggleButton.Text = "📦\nHide"
+         ToggleButton.Text = "CERBERUS\n📦\nCLOSED"
       end
    end
 end)
