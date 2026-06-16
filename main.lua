@@ -67,16 +67,18 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(1, 0)  -- Makes it perfectly circular
 corner.Parent = ToggleButton
 
--- Make Button Draggable
+-- Make Button Draggable (Only drag if mouse moves)
 local dragging = false
 local dragStart
 local startPos
+local isDragging = false
 
 ToggleButton.InputBegan:Connect(function(input, gameProcessed)
    if input.UserInputType == Enum.UserInputType.MouseButton1 then
       dragging = true
       dragStart = input.Position
       startPos = ToggleButton.Position
+      isDragging = false
    end
 end)
 
@@ -89,23 +91,32 @@ end)
 UserInputService.InputChanged:Connect(function(input, gameProcessed)
    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
       local delta = input.Position - dragStart
-      ToggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+      if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
+         isDragging = true
+         ToggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+      end
    end
 end)
 
 -- Toggle Window Function
 local windowVisible = true
 ToggleButton.MouseButton1Click:Connect(function()
-   windowVisible = not windowVisible
-   Window:Toggle(windowVisible)
-   
-   -- Change button appearance on toggle
-   if windowVisible then
-      ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
-      ToggleButton.Text = "📦"
-   else
-      ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
-      ToggleButton.Text = "✓"
+   if not isDragging then
+      windowVisible = not windowVisible
+      
+      -- Access the main UI element to toggle visibility
+      if Window and Window.UI and Window.UI.Main then
+         Window.UI.Main.Visible = windowVisible
+      end
+      
+      -- Change button appearance on toggle
+      if windowVisible then
+         ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 30, 70)
+         ToggleButton.Text = "📦"
+      else
+         ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
+         ToggleButton.Text = "✓"
+      end
    end
 end)
 
